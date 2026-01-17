@@ -1,0 +1,56 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Login</h2>
+    <p class="subtitle">Welcome back! Please login to your account.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <input 
+          type="email" 
+          id="email"
+          placeholder="Enter your email" 
+          formControlName="email"
+          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" />
+        <span class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+          <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password <span class="required">*</span></label>
+        <input 
+          type="password" 
+          id="password"
+          placeholder="Enter your password" 
+          formControlName="password"
+          [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" />
+        <span class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+        </span>
+      </div>
+
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button 
+        type="submit" 
+        class="submit-btn"
+        [disabled]="loginForm.invalid">
+        Login
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a (click)="navigateToRegister()" class="link">Register here</a></p>
+    </div>
+  </div>
+</div>
+

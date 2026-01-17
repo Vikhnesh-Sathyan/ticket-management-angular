@@ -1,0 +1,123 @@
+<div class="ticket-management-container">
+  <header class="header">
+    <div class="header-content">
+      <h1>Ticket Management System</h1>
+      <div class="user-info" *ngIf="currentUser">
+        <span class="user-name">Welcome, {{ currentUser.name }}</span>
+        <button (click)="logout()" class="logout-btn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <app-ticket-form
+    [ticket]="selectedTicket"
+    (saveTicket)="onSave($event)"
+    (cancelEdit)="onCancelEdit()">
+  </app-ticket-form>
+
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Search tickets by title or description..." 
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        class="search-input">
+    </div>
+
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
+        <select 
+          id="statusFilter"
+          [(ngModel)]="statusFilter"
+          (ngModelChange)="onStatusFilterChange()"
+          class="filter-select">
+          <option value="All">All</option>
+          <option value="Open">Open</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="priorityFilter">Priority:</label>
+        <select 
+          id="priorityFilter"
+          [(ngModel)]="priorityFilter"
+          (ngModelChange)="onPriorityFilterChange()"
+          class="filter-select">
+          <option value="All">All</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+      </div>
+
+      <button 
+        type="button" 
+        (click)="clearFilters()" 
+        class="clear-filters-btn"
+        *ngIf="searchTerm || statusFilter !== 'All' || priorityFilter !== 'All'">
+        Clear Filters
+      </button>
+    </div>
+
+    <div class="ticket-count">
+      <span>Showing {{ filteredTickets.length }} of {{ tickets.length }} tickets</span>
+    </div>
+  </div>
+
+  <div class="tickets-container">
+    <div *ngIf="filteredTickets.length === 0" class="empty-state">
+      <p *ngIf="tickets.length === 0">No tickets yet. Create your first ticket above!</p>
+      <p *ngIf="tickets.length > 0">No tickets match your filters. Try adjusting your search criteria.</p>
+    </div>
+
+    <div *ngFor="let ticket of filteredTickets" class="ticket-card">
+      <div class="ticket-header">
+        <h3 class="ticket-title">{{ ticket.title }}</h3>
+        <div class="ticket-badges">
+          <span [class]="'badge status-badge ' + getStatusClass(ticket.status)">
+            {{ ticket.status }}
+          </span>
+          <span [class]="'badge priority-badge ' + getPriorityClass(ticket.priority)">
+            {{ ticket.priority }}
+          </span>
+        </div>
+      </div>
+
+      <p class="ticket-description">{{ ticket.description || 'No description provided' }}</p>
+
+      <div class="ticket-meta">
+        <div class="meta-item">
+          <span class="meta-label">Assignee:</span>
+          <span class="meta-value">{{ ticket.assignee || 'Unassigned' }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Created:</span>
+          <span class="meta-value">{{ formatDate(ticket.createdDate) }}</span>
+        </div>
+      </div>
+
+      <div class="ticket-actions">
+        <div class="quick-status-update">
+          <label for="status-{{ ticket.id }}">Quick Status:</label>
+          <select 
+            id="status-{{ ticket.id }}"
+            [value]="ticket.status"
+            (change)="onStatusChange(ticket, $any($event.target).value)"
+            class="status-select">
+            <option value="Open">Open</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+        <div class="action-buttons">
+          <button (click)="onEdit(ticket)" class="btn btn-edit">Edit</button>
+          <button (click)="onDelete(ticket.id)" class="btn btn-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
